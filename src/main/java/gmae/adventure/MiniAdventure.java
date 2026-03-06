@@ -23,4 +23,8 @@ public abstract class MiniAdventure {
     public abstract Result getResult();
     public abstract void reset();
     public abstract AdventureState getState();
+
+    public Action promptActionGUI(Player player, ActionType type) {
+        return Action.of(type);
+    }
 }

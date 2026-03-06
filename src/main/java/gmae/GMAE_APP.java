@@ -2,14 +2,27 @@ package gmae;
 
 import gmae.menu.MenuController;
 import gmae.profile.ProfileManager;
+import javafx.application.Application;
+import javafx.scene.Scene;
+import javafx.scene.control.Label;
+import javafx.scene.layout.StackPane;
+import javafx.stage.Stage;
 
-public class GMAE_APP {
+public class GMAE_APP extends Application {
 
     private MenuController menuController;
     private ProfileManager profileManager;
 
-    public static void main(String[] args) {
-        new GMAE_APP().start();
+    @Override
+    public void start(Stage primaryStage) {
+        initialize();
+
+        // GUI to be expanded later
+        StackPane root = new StackPane(new Label("GMAE ..."));
+        primaryStage.setScene(new Scene(root, 900, 650));
+        primaryStage.setTitle("GMAE - GuildQuest Mini-Adventure Environment");
+        primaryStage.setResizable(false);
+        primaryStage.show();
     }
 
     public void initialize() {
@@ -22,18 +35,14 @@ public class GMAE_APP {
         menuController = new MenuController();
     }
 
-    public void start() {
-        initialize();
-        // TODO: menuController
-        exit();
+    @Override
+    public void stop() {
+        if (profileManager != null) {
+            profileManager.saveProfiles();
+        }
     }
 
-    public void showMenu() {
-        // TODO: displayMenu
-    }
-
-    public void exit() {
-        profileManager.saveProfiles();
-        System.exit(0);
+    public static void main(String[] args) {
+        launch(args);
     }
 }
