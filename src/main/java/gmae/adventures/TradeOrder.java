@@ -1,6 +1,6 @@
 package gmae.adventures;
 
-import gmae.model.Realm;
+import gmae.model.RealmView;
 
 import java.util.Objects;
 import java.util.UUID;
@@ -10,19 +10,19 @@ public class TradeOrder {
     private final UUID id;
     private final String itemName;
     private final int quantity;
-    private final Realm destination;
+    private final RealmView destination;
     private final int rewardGold;
     private int turnsRemaining;
     private boolean completed;
 
-    public TradeOrder(String itemName, int quantity, Realm destination, int rewardGold, int turnsRemaining) {
+    public TradeOrder(String itemName, int quantity, RealmView destination, int rewardGold, int turnsRemaining) {
         this(UUID.randomUUID(), itemName, quantity, destination, rewardGold, turnsRemaining, false);
     }
 
     public TradeOrder(UUID id,
                       String itemName,
                       int quantity,
-                      Realm destination,
+                      RealmView destination,
                       int rewardGold,
                       int turnsRemaining,
                       boolean completed) {
@@ -66,7 +66,7 @@ public class TradeOrder {
         return quantity;
     }
 
-    public Realm getDestination() {
+    public RealmView getDestination() {
         return destination;
     }
 

@@ -7,7 +7,7 @@ public class Player {
 
     private final UUID id;
     private final PlayerProfile profile;
-    private Realm realm;
+    private RealmView realm;
     private int score;
 
     public Player(PlayerProfile profile) {
@@ -33,11 +33,11 @@ public class Player {
         // move in realmMap
     }
 
-    public void setRealm(Realm realm) {
+    public void setRealm(RealmView realm) {
         this.realm = realm;
     }
 
-    public Realm getPosition() {
+    public RealmView getPosition() {
         return realm;
     }
 

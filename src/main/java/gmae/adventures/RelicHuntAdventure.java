@@ -8,7 +8,7 @@ import gmae.adventure.Result;
 import gmae.model.Inventory;
 import gmae.model.Item;
 import gmae.model.Player;
-import gmae.model.Realm;
+import gmae.model.RealmView;
 import gmae.model.RealmMap;
 
 import java.util.ArrayList;
@@ -36,7 +36,7 @@ public class RelicHuntAdventure extends MiniAdventure {
     private final Map<Player, Integer> relicCount = new LinkedHashMap<>();
     private final Set<Player> defendingPlayers = new LinkedHashSet<>();
     private final Map<Player, ActiveEffects> activeEffects = new LinkedHashMap<>();
-    private final Map<Realm, Integer> relicsInRealm = new LinkedHashMap<>();
+    private final Map<RealmView, Integer> relicsInRealm = new LinkedHashMap<>();
 
     private Player player1;
     private Player player2;
@@ -130,7 +130,7 @@ public class RelicHuntAdventure extends MiniAdventure {
         }
 
         switch (action.getType()) {
-            case MOVE -> move(player, (Realm) action.getParam("target"));
+            case MOVE -> move(player, (RealmView) action.getParam("target"));
             case DEFEND -> defend(player);
             case USE_ITEM -> useItem(player, (UUID) action.getParam("itemId"));
             case PASS -> System.out.println(player.getProfile().getPlayerName() + " waits this turn.");
@@ -184,10 +184,10 @@ public class RelicHuntAdventure extends MiniAdventure {
     }
 
     private Action promptMove(Player player, Scanner scanner) {
-        List<Realm> neighbors = realmMap.neighborsOf(player.getPosition());
+        List<RealmView> neighbors = realmMap.neighborsOf(player.getPosition());
         System.out.println("Choose a destination:");
         for (int i = 0; i < neighbors.size(); i++) {
-            Realm neighbor = neighbors.get(i);
+            RealmView neighbor = neighbors.get(i);
             System.out.printf("  %d. %s (relics: %d)%n", i + 1, neighbor.getName(), relicsInRealm.getOrDefault(neighbor, 0));
         }
         int choice = readChoice(scanner, 1, neighbors.size(), "Destination");
@@ -205,8 +205,8 @@ public class RelicHuntAdventure extends MiniAdventure {
         return Action.of(ActionType.USE_ITEM, "itemId", powerUps.get(choice - 1).getId());
     }
 
-    private boolean move(Player player, Realm destination) {
-        Realm current = player.getPosition();
+    private boolean move(Player player, RealmView destination) {
+        RealmView current = player.getPosition();
         if (destination == null || current == null || !realmMap.isAdjacent(current, destination)) {
             System.out.println("Invalid move. Choose an adjacent realm.");
             return false;
@@ -250,7 +250,7 @@ public class RelicHuntAdventure extends MiniAdventure {
         return true;
     }
 
-    private boolean collectRelics(Player player, Realm realm) {
+    private boolean collectRelics(Player player, RealmView realm) {
         int available = relicsInRealm.getOrDefault(realm, 0);
         if (available <= 0) {
             System.out.println("No relics remain in this realm.");
@@ -294,7 +294,7 @@ public class RelicHuntAdventure extends MiniAdventure {
         if (opponentEffects == null) {
             return false;
         }
-        Realm protectedRealm = opponentEffects.autoBlockRealm;
+        RealmView protectedRealm = opponentEffects.autoBlockRealm;
         if (protectedRealm != null && protectedRealm.equals(opponent.getPosition())) {
             opponentEffects.autoBlockRealm = null;
             return true;
@@ -371,14 +371,14 @@ public class RelicHuntAdventure extends MiniAdventure {
     }
 
     private void seedRelicsAcrossMap() {
-        for (Realm realm : realmMap.getRealms()) {
+        for (RealmView realm : realmMap.getRealms()) {
             relicsInRealm.put(realm, 1 + rng.nextInt(2));
         }
     }
 
     private void assignStartingRealms() {
-        List<Realm> realms = new ArrayList<>(realmMap.getRealms());
-        realms.sort(Comparator.comparing(Realm::getId));
+        List<RealmView> realms = new ArrayList<>(realmMap.getRealms());
+        realms.sort(Comparator.comparing(RealmView::getId));
         Collections.shuffle(realms, rng);
         player1.setRealm(realms.get(0));
         player2.setRealm(realms.size() > 1 ? realms.get(1) : realms.get(0));
@@ -402,7 +402,7 @@ public class RelicHuntAdventure extends MiniAdventure {
 
         String players = formatPlayer(player1) + System.lineSeparator() + formatPlayer(player2);
         String realms = realmMap.getRealms().stream()
-                .sorted(Comparator.comparing(Realm::getId))
+                .sorted(Comparator.comparing(RealmView::getId))
                 .map(this::formatRealmState)
                 .collect(Collectors.joining(" | "));
         return "Target relics: " + targetRelics + System.lineSeparator()
@@ -439,7 +439,7 @@ public class RelicHuntAdventure extends MiniAdventure {
         return String.join(", ", statuses);
     }
 
-    private String formatRealmState(Realm realm) {
+    private String formatRealmState(RealmView realm) {
         List<String> occupants = new ArrayList<>();
         if (realm.equals(player1.getPosition())) {
             occupants.add(player1.getProfile().getPlayerName());
@@ -473,7 +473,7 @@ public class RelicHuntAdventure extends MiniAdventure {
 
     private static final class ActiveEffects {
         private boolean doubleNextCollect;
-        private Realm autoBlockRealm;
+        private RealmView autoBlockRealm;
     }
 
     private static final class PowerUp extends Item {
