@@ -452,6 +452,18 @@ public class RelicHuntAdventure extends MiniAdventure {
         return realm.getId() + "=" + relicsInRealm.getOrDefault(realm, 0) + suffix;
     }
 
+    public int getRelicsInRealm(RealmView realm) {
+        return relicsInRealm.getOrDefault(realm, 0);
+    }
+
+    public int getTargetRelics() {
+        return targetRelics;
+    }
+
+    public int getRelicCount(Player player) {
+        return relicCount.getOrDefault(player, 0);
+    }
+
     private int readChoice(Scanner scanner, int min, int max, String prompt) {
         while (true) {
             System.out.printf("%s (%d-%d): ", prompt, min, max);

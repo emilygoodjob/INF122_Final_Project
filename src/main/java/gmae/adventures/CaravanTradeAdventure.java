@@ -602,6 +602,26 @@ public class CaravanTradeAdventure extends MiniAdventure {
                 .collect(Collectors.joining(" || "));
     }
 
+    public TradeList getMarketAt(RealmView realm) {
+        return marketByRealm.get(realm);
+    }
+
+    public int getGoldOf(Player player) {
+        return gold.getOrDefault(player, 0);
+    }
+
+    public int getGoldTarget() {
+        return goldTarget;
+    }
+
+    public List<TradeOrder> getOpenOrdersList() {
+        return Collections.unmodifiableList(openOrders);
+    }
+
+    public List<TradeOrder> getFulfillableOrdersForPlayer(Player player) {
+        return fulfillableOrdersFor(player);
+    }
+
     private int readChoice(Scanner scanner, int min, int max, String prompt) {
         while (true) {
             System.out.printf("%s (%d-%d): ", prompt, min, max);

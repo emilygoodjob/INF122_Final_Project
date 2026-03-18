@@ -27,4 +27,8 @@ public abstract class MiniAdventure {
     public Action promptActionGUI(Player player, ActionType type) {
         return Action.of(type);
     }
+
+    public RealmMap getRealmMap() {
+        return realmMap;
+    }
 }
