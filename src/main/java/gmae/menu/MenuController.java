@@ -4,6 +4,7 @@ import gmae.GMAE_APP;
 import gmae.adventure.AdventureRegistry;
 import gmae.adventure.MiniAdventure;
 import gmae.model.Player;
+import gmae.model.PlayerProfile;
 import gmae.profile.ProfileManager;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -14,6 +15,8 @@ import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.ColumnConstraints;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
@@ -105,6 +108,110 @@ public class MenuController {
         centerRow.setAlignment(Pos.TOP_LEFT);
 
         root.setCenter(centerRow);
+
+        // Bottom: adventurer roster
+        VBox rosterBox = buildRosterBox(p1Field, p2Field);
+        rosterBox.setPadding(new Insets(20, 0, 0, 0));
+        root.setBottom(rosterBox);
+
         return root;
     }
+
+    private VBox buildRosterBox(TextField p1Field, TextField p2Field) {
+        Label rosterTitle = new Label("Adventurer Roster");
+        rosterTitle.setStyle("-fx-font-size: 13; -fx-font-weight: bold; -fx-text-fill: #444;");
+
+        GridPane grid = buildRosterGrid(p1Field.getText().trim(), p2Field.getText().trim());
+
+        // Rebuild grid whenever either name changes
+        p1Field.textProperty().addListener((obs, o, n) ->
+                refreshRoster(grid, p1Field.getText().trim(), p2Field.getText().trim()));
+        p2Field.textProperty().addListener((obs, o, n) ->
+                refreshRoster(grid, p1Field.getText().trim(), p2Field.getText().trim()));
+
+        VBox box = new VBox(6, rosterTitle, grid);
+        box.setStyle("-fx-background-color: #f5f5f5; -fx-background-radius: 8; -fx-padding: 12;");
+        return box;
+    }
+
+    private GridPane buildRosterGrid(String activeName1, String activeName2) {
+        GridPane grid = new GridPane();
+        grid.setHgap(24);
+        grid.setVgap(4);
+        ColumnConstraints nameCol = new ColumnConstraints(160);
+        ColumnConstraints playedCol = new ColumnConstraints(80);
+        ColumnConstraints winsCol = new ColumnConstraints(70);
+        ColumnConstraints lossesCol = new ColumnConstraints(80);
+        ColumnConstraints rateCol = new ColumnConstraints(100);
+        grid.getColumnConstraints().addAll(nameCol, playedCol, winsCol, lossesCol, rateCol);
+
+        // Header row
+        String headerStyle = "-fx-font-size: 11; -fx-font-weight: bold; -fx-text-fill: #888;";
+        grid.add(styledLabel("NAME",     headerStyle), 0, 0);
+        grid.add(styledLabel("PLAYED",   headerStyle), 1, 0);
+        grid.add(styledLabel("WINS",     headerStyle), 2, 0);
+        grid.add(styledLabel("LOSSES",   headerStyle), 3, 0);
+        grid.add(styledLabel("WIN RATE", headerStyle), 4, 0);
+
+        populateRosterRows(grid, activeName1, activeName2);
+        return grid;
+    }
+
+    private void refreshRoster(GridPane grid, String activeName1, String activeName2) {
+        grid.getChildren().removeIf(n -> GridPane.getRowIndex(n) != null && GridPane.getRowIndex(n) > 0);
+        populateRosterRows(grid, activeName1, activeName2);
+    }
+
+    private void populateRosterRows(GridPane grid, String activeName1, String activeName2) {
+        java.util.List<PlayerProfile> profiles = new java.util.ArrayList<>(profileManager.getAllProfiles());
+        profiles.sort(java.util.Comparator.comparingInt(PlayerProfile::getGamesWin).reversed());
+
+        java.util.Set<String> shown = new java.util.LinkedHashSet<>();
+        profiles.forEach(p -> shown.add(p.getPlayerName()));
+
+        int row = 1;
+        for (PlayerProfile profile : profiles) {
+            boolean active = profile.getPlayerName().equalsIgnoreCase(activeName1)
+                    || profile.getPlayerName().equalsIgnoreCase(activeName2);
+            String rowStyle = active
+                    ? "-fx-font-size: 12; -fx-font-weight: bold; -fx-text-fill: #2a7ae2;"
+                    : "-fx-font-size: 12; -fx-text-fill: #333;";
+            int played = profile.getGamesPlayed();
+            int wins   = profile.getGamesWin();
+            int losses = profile.getGamesLost();
+            int winPct = played == 0 ? 0 : (int) Math.round(wins * 100.0 / played);
+
+            grid.add(styledLabel(profile.getPlayerName(), rowStyle), 0, row);
+            grid.add(styledLabel(String.valueOf(played),  rowStyle), 1, row);
+            grid.add(styledLabel(String.valueOf(wins),    rowStyle), 2, row);
+            grid.add(styledLabel(String.valueOf(losses),  rowStyle), 3, row);
+            grid.add(styledLabel(winPct + "%",            rowStyle), 4, row);
+            row++;
+        }
+
+        // New adventurers entered but not yet saved
+        for (String name : new String[]{activeName1, activeName2}) {
+            if (!name.isEmpty() && !shown.contains(name)) {
+                String newStyle = "-fx-font-size: 12; -fx-font-style: italic; -fx-text-fill: #888;";
+                grid.add(styledLabel(name,              newStyle), 0, row);
+                grid.add(styledLabel("—",               newStyle), 1, row);
+                grid.add(styledLabel("—",               newStyle), 2, row);
+                grid.add(styledLabel("—",               newStyle), 3, row);
+                grid.add(styledLabel("New adventurer",  newStyle), 4, row);
+                row++;
+            }
+        }
+
+        if (row == 1) {
+            String emptyStyle = "-fx-font-size: 12; -fx-text-fill: #aaa; -fx-font-style: italic;";
+            grid.add(styledLabel("No adventurers yet", emptyStyle), 0, 1);
+        }
+    }
+
+    private Label styledLabel(String text, String style) {
+        Label l = new Label(text);
+        l.setStyle(style);
+        return l;
+    }
+
 }
