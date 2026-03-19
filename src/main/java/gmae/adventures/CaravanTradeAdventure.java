@@ -155,16 +155,16 @@ public class CaravanTradeAdventure extends MiniAdventure {
 
         switch (action.getType()) {
             case MOVE -> move(player, (RealmView) action.getParam("target"));
-            case BUY -> buyGoods(
-                    player,
-                    (String) action.getParam("itemName"),
-                    (Integer) action.getParam("quantity")
-            );
-            case SELL -> sellGoods(
-                    player,
-                    (String) action.getParam("itemName"),
-                    (Integer) action.getParam("quantity")
-            );
+            case BUY -> {
+                String itemName = (String) action.getParam("itemName");
+                Object qty = action.getParam("quantity");
+                if (itemName != null && qty != null) buyGoods(player, itemName, (Integer) qty);
+            }
+            case SELL -> {
+                String itemName = (String) action.getParam("itemName");
+                Object qty = action.getParam("quantity");
+                if (itemName != null && qty != null) sellGoods(player, itemName, (Integer) qty);
+            }
             case TRADE -> deliverOrder(player, (UUID) action.getParam("orderId"));
             case PASS -> System.out.println(player.getProfile().getPlayerName() + " passes this turn.");
             default -> System.out.println("Unsupported action for Caravan Trade Run.");

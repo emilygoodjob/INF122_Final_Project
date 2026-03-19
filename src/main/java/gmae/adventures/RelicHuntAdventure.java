@@ -132,7 +132,10 @@ public class RelicHuntAdventure extends MiniAdventure {
         switch (action.getType()) {
             case MOVE -> move(player, (RealmView) action.getParam("target"));
             case DEFEND -> defend(player);
-            case USE_ITEM -> useItem(player, (UUID) action.getParam("itemId"));
+            case USE_ITEM -> {
+                UUID itemId = (UUID) action.getParam("itemId");
+                if (itemId != null) useItem(player, itemId);
+            }
             case PASS -> System.out.println(player.getProfile().getPlayerName() + " waits this turn.");
             default -> System.out.println("That action is not supported in Relic Hunt.");
         }

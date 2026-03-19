@@ -10,6 +10,7 @@ public class Item {
     public Item(String itemId, String name, String itemType, String description, String rarity) {
         this.itemId = itemId;
         this.name = name;
+        this.itemType = itemType;
         this.description = description;
         this.rarity = rarity;
     }
