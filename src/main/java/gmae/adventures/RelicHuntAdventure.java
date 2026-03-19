@@ -6,7 +6,7 @@ import gmae.adventure.AdventureState;
 import gmae.adventure.MiniAdventure;
 import gmae.adventure.Result;
 import gmae.model.Inventory;
-import gmae.model.Item;
+import gmae.model.ItemAdapter;
 import gmae.model.Player;
 import gmae.model.RealmView;
 import gmae.model.RealmMap;
@@ -239,7 +239,7 @@ public class RelicHuntAdventure extends MiniAdventure {
 
     private boolean useItem(Player player, UUID itemId) {
         Inventory inventory = player.getProfile().getInventory();
-        Item item = inventory.findById(itemId);
+        ItemAdapter item = inventory.findById(itemId);
         if (!(item instanceof PowerUp powerUp)) {
             System.out.println("That item is no longer available.");
             return false;
@@ -488,7 +488,7 @@ public class RelicHuntAdventure extends MiniAdventure {
         private RealmView autoBlockRealm;
     }
 
-    private static final class PowerUp extends Item {
+    private static final class PowerUp extends ItemAdapter {
 
         private final PowerUpType powerUpType;
         private final int durationTurns;

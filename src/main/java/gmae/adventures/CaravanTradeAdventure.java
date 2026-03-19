@@ -6,7 +6,7 @@ import gmae.adventure.AdventureState;
 import gmae.adventure.MiniAdventure;
 import gmae.adventure.Result;
 import gmae.model.Inventory;
-import gmae.model.Item;
+import gmae.model.ItemAdapter;
 import gmae.model.Player;
 import gmae.model.RealmView;
 import gmae.model.RealmMap;
@@ -544,7 +544,7 @@ public class CaravanTradeAdventure extends MiniAdventure {
     private Map<String, Long> countGoodsByName(Player player) {
         return player.getProfile().getInventory().getItems().stream()
                 .filter(item -> item instanceof Goods)
-                .map(Item::getName)
+                .map(ItemAdapter::getName)
                 .collect(Collectors.groupingBy(
                         name -> name,
                         LinkedHashMap::new,
@@ -636,7 +636,7 @@ public class CaravanTradeAdventure extends MiniAdventure {
         }
     }
 
-    private static final class Goods extends Item {
+    private static final class Goods extends ItemAdapter {
         private Goods(String name, String originRealmName) {
             super(
                     name,
