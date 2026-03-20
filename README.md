@@ -18,7 +18,9 @@ A two-player local mini-adventure framework set in the GuildQuest world. Players
 
 ## Setup (If Maven is not installed)
 
-### 1. Install Homebrew (Mac only)
+### Mac
+
+#### 1. Install Homebrew (Mac only)
 
 ```bash
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
@@ -33,7 +35,7 @@ eval "$(/opt/homebrew/bin/brew shellenv)"
 
 ---
 
-### 2. Install Maven
+#### 2. Install Maven
 
 Check if Maven is installed:
 
@@ -50,6 +52,25 @@ brew install maven
 Verify installation:
 
 ```bash
+mvn -version
+```
+
+---
+
+### Windows
+
+#### 1. Install Maven
+
+1. Download the latest Maven binary zip from [https://maven.apache.org/download.cgi](https://maven.apache.org/download.cgi).
+2. Extract the zip (e.g., to `C:\Program Files\Apache\maven`).
+3. Add Maven to your `PATH`:
+   - Open **System Properties** → **Advanced** → **Environment Variables**.
+   - Under **System variables**, find `Path` and click **Edit**.
+   - Click **New** and add the path to Maven's `bin` folder (e.g., `C:\Program Files\Apache\maven\bin`).
+   - Also add/verify `JAVA_HOME` points to your JDK folder (e.g., `C:\Program Files\Eclipse Adoptium\jdk-17`).
+4. Open a **new** Command Prompt and verify:
+
+```cmd
 mvn -version
 ```
 
